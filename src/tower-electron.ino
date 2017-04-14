@@ -3,7 +3,7 @@
 
 #define NUM_LEDS 10
 #define NUM_STRIPS 10
-#define LED_BRIGHTNESS 127
+#define LED_BRIGHTNESS 32
 
 #define LED_PWR D7
 #define LED_DAT C0
@@ -17,6 +17,8 @@
 #define LED_CLK8 D2
 #define LED_CLK9 D3
 #define LED_CLK10 D4
+
+#define RNG10 A3
 
 Adafruit_DotStar strips[] = {
   Adafruit_DotStar(NUM_LEDS, LED_DAT, LED_CLK1),
@@ -43,6 +45,7 @@ void setup() {
   // Every pattern should register a start funtion here.
   Particle.function("Rainbow", rainbow_start);
   Particle.function("Twinkles", twinkles_start);
+  Particle.function("RangerDebug", rangerDebug_start);
 
   // Initialize LED strips
   for (uint8_t i = 0; i < NUM_STRIPS; i++) {
@@ -54,6 +57,9 @@ void setup() {
   // Decalre LED pwer control as output
   pinMode(LED_PWR, OUTPUT);
 
+  // Setup sensor inputs
+  pinMode(RNG10, INPUT);
+
   // Give everying a moment.
   delay(100);
 
@@ -63,6 +69,15 @@ void setup() {
 
 // Simply animate the current mode.
 void loop() {
+  if (Serial.available() > 0) {
+    mode = Serial.parseInt();
+    mode > 0 ? turnOnLEDs() : turnOffLEDs();
+
+    Serial.read();
+    Serial.print("Set mode: ");
+    Serial.println(mode);
+  }
+
   switch (mode) {
     case 0:
       break;
@@ -73,6 +88,10 @@ void loop() {
 
     case 2:
       twinkles();
+      break;
+
+    case 3:
+      rangerDebug();
       break;
   }
 }
@@ -223,6 +242,28 @@ void twinkles() {
     for (uint8_t i = 0; i < NUM_LEDS; i++) {
       uint8_t brightness = twinkles_brightness[stripIdx * NUM_STRIPS + i];
       strips[stripIdx].setPixelColor(i, brightness, brightness, brightness);
+    }
+    strips[stripIdx].show();
+  }
+}
+
+// ----------------
+// - Ranger Debug -
+
+int rangerDebug_start(String arg) {
+  mode = 3;
+  turnOnLEDs();
+  return 1;
+}
+
+void rangerDebug() {
+  uint rng = constrain(analogRead(RNG10), 1600, 4095);
+  uint8_t threshold = map(rng, 1600, 4095, 0, NUM_LEDS);
+  Serial.println(threshold);
+
+  for (uint8_t stripIdx = 0; stripIdx < NUM_STRIPS; stripIdx++) {
+    for (uint8_t i = 0; i < NUM_LEDS; i++) {
+      strips[stripIdx].setPixelColor(i, i < threshold ? 0xffffff : 0x000000);
     }
     strips[stripIdx].show();
   }
