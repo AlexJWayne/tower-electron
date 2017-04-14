@@ -1,3 +1,25 @@
+# How to build and deploy via USB
+
+Install the particle CLI:
+
+```
+npm install -g particle
+```
+
+Compile the firmware:
+
+```
+particle compile electron . --saveTo firmware.bin
+```
+
+If it compiles, put the electron in DFU mode by holding the RESET and MODE button, then release RESET and keep MODE pressed until the onboard LED starts flashing yellow.
+
+```
+particle flash --usb firmware.bin
+```
+
+---
+
 # tower-electron2
 
 A Particle project named tower-electron2
@@ -7,7 +29,7 @@ A Particle project named tower-electron2
 Every new Particle project is composed of 3 important elements that you'll see have been created in your project directory for tower-electron2.
 
 #### ```/src``` folder:  
-This is the source folder that contains the firmware files for your project. It should *not* be renamed. 
+This is the source folder that contains the firmware files for your project. It should *not* be renamed.
 Anything that is in this folder when you compile your project will be sent to our compile service and compiled into a firmware binary for the Particle device that you have targeted.
 
 If your application contains multiple files, they should all be included in the `src` folder. If your firmware depends on Particle libraries, those dependencies are specified in the `project.properties` file referenced below.
