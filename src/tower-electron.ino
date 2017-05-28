@@ -1,8 +1,8 @@
 #include "hsv.h"
 #include "dotstar.h"
 
-#define NUM_LEDS 10
-#define NUM_STRIPS 10
+#define NUM_LEDS 10 // per strip should be 32 (4*8) in the final sculpture.
+#define NUM_STRIPS 10 // number if separate strips, one per column.
 #define LED_BRIGHTNESS 32
 
 #define LED_PWR D7
@@ -33,7 +33,7 @@ Adafruit_DotStar strips[] = {
   Adafruit_DotStar(NUM_LEDS, LED_DAT, LED_CLK10)
 };
 
-uint8_t mode = 0;
+uint8_t mode = 02;
 bool ledPower = false;
 
 void setup() {
@@ -63,8 +63,9 @@ void setup() {
   // Give everying a moment.
   delay(100);
 
-  // Ensure all LEDs are off to start.
-  turnOffLEDs();
+  // Start the default program
+  rangerDebug_start("");
+  //turnOffLEDs(); // or start with all LEDs off
 }
 
 // Simply animate the current mode.

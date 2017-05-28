@@ -3,7 +3,7 @@
 Install the particle CLI:
 
 ```
-npm install -g particle
+npm install -g particle particle-cli
 ```
 
 Compile the firmware:
@@ -17,6 +17,16 @@ If it compiles, put the electron in DFU mode by holding the RESET and MODE butto
 ```
 particle flash --usb firmware.bin
 ```
+
+If LED is purple, your electrons firmware is out of date. Put into DFU mode, connect over USB and run:
+
+```
+particle update
+```
+
+## Switching Modes
+
+Use the Particle mobile app to trigger the exposed functions. You can also send a single character via USB serial. Use `0` for off, any other digit to start the animation pattern with that ID.
 
 ---
 
